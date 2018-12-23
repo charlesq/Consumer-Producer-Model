@@ -1,0 +1,83 @@
+1. Introduction
+   This coding exercise implements a basic multi-threading consumer-producer model.  
+2. classes
+   2.1 BufferItem
+       A BufferItem provides a string data field, an unique ID, 
+       Type of string is picked bacause it is mark the source of data content.
+   2.2 BufferQueue
+       BuffferQueue derives from std::queue with multi-thread-safe functions to acquire/return BufferItem objects. 
+       A mutex and condition variable are used to syncrhonize access to the queue.
+       A referene bool variable over_ is defined to exit conditional variable wait. In the current code base, this has not been utilized yet.
+   2.3 Roles 
+       2.3.1 Worker
+          This is base class provides base/common features for Consumer and Produce and should not be instantiated.
+          A Worker has a name, a role (e.g. Consumer or Producer), two BufferQueue references for data-filled Buffer Queue  and unfilled Buffer Queue respectively.
+          The reference bool varialbe halt_ is defined to exit the while loop executing in a thread, yet to be utilized.
+          The latency_ field designate number of seconds a Worker requires to fully consume/produce BufferItem; Worker::work() does this timing control job.
+      2.3.2 Consumer
+          Consumer implemens a while loop to acquire/consume BufferItem objects.
+          Consumer consumes data by print out it to the console.
+     2.3.3 Producer
+          Producer implements a while loop to acquire/produce BufferItem objects.
+          In producing data in BufferItem objects, it writes its name and a number which increments in iteration of the while loop
+   2.4 Thread Models
+     2.4.1 ThreadModelBase
+         ThreadModeBase provides base code for provisioning Consumer/Producer objects and running each in a thread.
+         It does not provide BufferQueues, which are left to various concrete Thread Models.
+     2.4.2 ThreadModeOne
+         Should have named it as ThreadModelSimple. :-)
+         It provides two BufferQueue objects and demontrates opereraions of configurable number of Consumers and Producers.
+     2.4.3 ThreadModelDeadLock
+         To be implemented ...
+     2.4.4 ThreadModelLiveLock
+         To be implemented ...
+3. Code structure
+   |--- Makefile, README
+   |---inc (.h header files)
+   |
+   |---src (cpp files for classes, main, utils, etc)
+4. Build the code
+   run make command which generates binary executable cp
+5. Run the code
+    Users must specify the number of consumers, the number of producers and number of BufferItems from commandline.
+6. Output logs of an example run 
+  
+	$./cp 2 3 3
+	[consumer_1]:     Attemps to acquire filled buffer 
+	[consumer_1]:     Attemps to acquire filled buffer 
+	[consumer_0]:     Attemps to acquire filled buffer 
+	[Producer_2]:     Atttemps to acquire unfilled buffer 
+	[consumer_0]:     Attemps to acquire filled buffer 
+	[Producer_1]:     Atttemps to acquire unfilled buffer 
+	[Producer_0]:     Atttemps to acquire unfilled buffer 
+	[Producer_2]:     Atttemps to acquire unfilled buffer 
+	[Producer_2]:  PUTS $$$$$$[Producer_2_data_0]$$$$$$ in [BufferItem 2]
+	[Producer_2]:     Atttemps to acquire unfilled buffer 
+	[Producer_0]:     Atttemps to acquire unfilled buffer 
+	[Producer_0]:  PUTS $$$$$$[Producer_0_data_0]$$$$$$ in [BufferItem 0]
+	[Producer_0]:     Atttemps to acquire unfilled buffer 
+	[Producer_1]:     Atttemps to acquire unfilled buffer 
+	[Producer_1]:  PUTS $$$$$$[Producer_1_data_0]$$$$$$ in [BufferItem 1]
+	[Producer_1]:     Atttemps to acquire unfilled buffer 
+	[consumer_0]:     Attemps to acquire filled buffer 
+	[consumer_0]:  CONSUMES ******(Producer_1_data_0)****** in [BufferItem 1]
+	[consumer_1]:     Attemps to acquire filled buffer 
+	[consumer_1]:  CONSUMES ******(Producer_0_data_0)****** in [BufferItem 0]
+	[consumer_1]:     Attemps to acquire filled buffer 
+	[consumer_1]:  CONSUMES ******(Producer_2_data_0)****** in [BufferItem 2]
+	[consumer_1]:     Attemps to acquire filled buffer 
+	[consumer_0]:     Attemps to acquire filled buffer 
+	[consumer_1]:     Attemps to acquire filled buffer 
+	[Producer_0]:     Atttemps to acquire unfilled buffer 
+	[Producer_0]:  PUTS $$$$$$[Producer_0_data_1]$$$$$$ in [BufferItem 0]
+	[Producer_0]:     Atttemps to acquire unfilled buffer 
+	[Producer_1]:     Atttemps to acquire unfilled buffer 
+	[Producer_1]:  PUTS $$$$$$[Producer_1_data_1]$$$$$$ in [BufferItem 2]
+	[Producer_2]:     Atttemps to acquire unfilled buffer 
+	[Producer_2]:  PUTS $$$$$$[Producer_2_data_1]$$$$$$ in [BufferItem 1]
+	[Producer_1]:     Atttemps to acquire unfilled buffer 
+	[Producer_2]:     Atttemps to acquire unfilled buffer  
+    
+
+           
+
