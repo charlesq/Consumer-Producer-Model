@@ -40,7 +40,7 @@
    run make command which generates binary executable cp
 5. Run the code
     Users must specify the number of consumers, the number of producers and number of BufferItems from commandline.
-6. Output logs of an example run 
+6. Output logs of a sample run 
   
 	$./cp 2 3 3
 	[consumer_1]:     Attemps to acquire filled buffer 
