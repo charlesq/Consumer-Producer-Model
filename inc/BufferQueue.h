@@ -15,6 +15,7 @@ public:
     virtual void fillBufferItems(uint16_t numOfBufferItems);
     ~BufferQueue();
     virtual std::shared_ptr<BufferItem> acquireBuffer(void);
+    virtual std::shared_ptr<BufferItem> acquireBufferWithoutCV(void);
 
     virtual  void releaseBuffer(std::shared_ptr<BufferItem> buf);
     virtual void setName(std::string n) final;

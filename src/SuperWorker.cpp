@@ -22,3 +22,26 @@ void SuperWorker::work(void)
     }
 
 }
+
+
+void SuperWorker::workWithoutCV(void)
+{
+    while(!halt_)
+    {
+        auto bc = Consumer::acquireBuffer();
+        if (bc == nullptr)
+        {
+           continue;
+        }
+        Consumer::consume(bc);
+        auto bp = Producer::acquireBuffer();
+        if (bp == nullptr)
+        {
+            continue;
+        }
+        
+        Producer::produce(bp);
+     
+    }
+}
+

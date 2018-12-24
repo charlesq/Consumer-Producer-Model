@@ -18,7 +18,12 @@ void Producer::work(void)
         ss.clear();
         auto  buf = unfilled_->acquireBuffer();
         if (buf.get() == nullptr)
+        {
+            ss << "[" << getName() << "]: " << " GOT NO UNFILLED BUFFER from " << "[" << filled_->getName() << "]" << std::endl;
+            printMessage(ss.str());
+            ss.clear();
             continue;
+        } 
         auto &data = buf->getBuffer();
         data.clear();
         data.assign(getName() + "_data_" + std::to_string(seq++));
@@ -33,4 +38,44 @@ void Producer::work(void)
     }
 
 }
+
+
+std::shared_ptr<BufferItem>  Producer::acquireBuffer(void)
+{
+    std::stringstream ss;
+    ss << "[" << getName() << "]: " << "    Atttemps to acquire unfilled buffer from [" << unfilled_->getName() << "]" << std::endl;
+    printMessage(ss.str());
+    ss.clear();
+    auto buf = unfilled_->acquireBufferWithoutCV();
+    if (buf.get() == nullptr)
+    {
+        ss << "[" << getName() << "]: " << " GOT NO UNFILLED BUFFER from " << "[" << filled_->getName() << "]" << std::endl;
+        printMessage(ss.str());
+        ss.clear();
+    } 
+    return buf;
+}
+
+
+
+void Producer::produce(std::shared_ptr<BufferItem> & buf)
+{
+    static size_t seq = 0;
+    std::stringstream ss;
+    if (buf.get() == nullptr)
+        return;
+    auto &data = buf->getBuffer();
+    data.clear();
+    data.assign(getName() + "_data_" + std::to_string(seq++));
+    ss<< "[" << getName() << "]: "  << " PRODUCING   $$$$$$[" <<  buf->getBuffer() << "]$$$$$$ in [BufferItem " << buf->getId()  << "]" << std::endl;
+    printMessage(ss.str());
+    ss.clear();
+    Worker::work(); /* I am not so diligent  and need a rest :-) */ 
+    ss << "[" << getName() << "]: " << " POSTED       $$$$$$[BufferItem " << buf->getId() << " to [" << filled_->getName() << "]" << std::endl; 
+    printMessage(ss.str());
+    filled_->releaseBuffer(buf); 
+    Worker::work();
+
+}
+
 

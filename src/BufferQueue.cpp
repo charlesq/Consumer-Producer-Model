@@ -1,4 +1,7 @@
+#include <memory>
+#include <string>
 #include "../inc/BufferQueue.h"
+#include "../inc/utils.h"
 
 BufferQueue::BufferQueue(const bool &forceOut)
 :over_(forceOut)
@@ -30,7 +33,14 @@ std::shared_ptr<BufferItem> BufferQueue::acquireBuffer(void)
     lk.unlock();
     return b;
 }
-std::shared_ptr<BufferItem> BufferQueue::dequeueBuffer(void)
+std::shared_ptr<BufferItem>  BufferQueue::acquireBufferWithoutCV(void)
+{
+    std::lock_guard<std::mutex> lk(mtx_);
+    printMessage(std::string("                     LOCKED on ") + getName() + "\n");
+    return  dequeueBuffer();
+}
+
+std::shared_ptr<BufferItem>  BufferQueue::dequeueBuffer(void)
 {
   std::shared_ptr<BufferItem> item;
   if (!empty())

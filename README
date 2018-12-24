@@ -1,7 +1,8 @@
 1. Introduction
    This coding exercise implements:
      1) a basic multi-threading consumer-producer model.  
-     2) a Deadlock Scenario with Consumer and producer.
+     2) a Deadlock Scenario with Consumer and producer Model
+     3) a Livelock Scenario with Consumer and Producer Model
 2. classes
    2.1 BufferItem
        A BufferItem provides a string data field, an unique ID, 
@@ -35,8 +36,18 @@
          ThreadModelDeadlock inherits ThreadModelBase and overrides run().
          The trick is in its constructor, it makes each SuperWorker to consume buffers produced by next SuperWorker and formes circular dependencies; consequently,
          which incurs a deadlock scenarion in execution.
-     2.4.4 ThreadModelLiveLock
-         To be implemented ...
+     2.4.4 ThreadModelLivelock
+         ThreadModelDeadLock inherits ThreadModelBase and overrides run().
+         The trick:
+            1) each SuperWorker will make attemp to acquire a BufferItem for its Producer duty if it failes to acquire a BufferItem for its Consumer duty. 
+               In another word, it must acquire both BufferItems in order to produce.
+            2) Deadlock won't occur because Mutexes for both duties will be releasd in each iteration.
+         To support ThreadModelDeadLivelock:
+            1) BufferQueue::acquireBufferWithoutCV() is added
+            2) Consumer::acquireBuffer() and Consumer::consume() are added
+            3) Producer::acquireBuffer() and Producer::produce() are added
+            4) SuperWorker::workWithoutCV() is added
+      
 3. Source code structure
    |--- Makefile, README
    |---inc (.h header files)
