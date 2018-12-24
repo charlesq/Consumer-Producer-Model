@@ -1,5 +1,7 @@
 1. Introduction
-   This coding exercise implements a basic multi-threading consumer-producer model.  
+   This coding exercise implements:
+     1) a basic multi-threading consumer-producer model.  
+     2) a Deadlock Scenario with Consumer and producer.
 2. classes
    2.1 BufferItem
        A BufferItem provides a string data field, an unique ID, 
