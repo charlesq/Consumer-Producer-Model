@@ -31,14 +31,14 @@
          To be implemented ...
      2.4.4 ThreadModelLiveLock
          To be implemented ...
-3. Code structure
+3. Source code structure
    |--- Makefile, README
    |---inc (.h header files)
    |
    |---src (cpp files for classes, main, utils, etc)
 4. Build the code
    run make command which generates binary executable cp
-5. Run the code
+5. Run the binary executable 
     Users must specify the number of consumers, the number of producers and number of BufferItems from commandline.
 6. Output logs of a sample run 
   

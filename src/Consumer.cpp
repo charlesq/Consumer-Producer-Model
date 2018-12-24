@@ -3,7 +3,7 @@
 #include "../inc/utils.h"
 
 Consumer::Consumer(std::shared_ptr<BufferQueue > & cQ, std::shared_ptr<BufferQueue> &bQ, const bool &signalStop, std::string name)
-:Worker(cQ,bQ, signalStop, std::string("consumer_") + name)
+:Worker(cQ,bQ, signalStop, std::string("Consumer_") + name)
 {
 }
 void Consumer::work(void)
