@@ -9,6 +9,9 @@ public:
     SuperWorker(void) = delete;
     SuperWorker(std::pair<std::shared_ptr<BufferQueue>, std::shared_ptr<BufferQueue> >  consumer_part, std::pair<std::shared_ptr<BufferQueue>, std::shared_ptr<BufferQueue> >  producer_part, const bool &signalStop, std::string name); 
 
+    void work(void);
+protected:
+   const bool &halt_;
 };
 
 

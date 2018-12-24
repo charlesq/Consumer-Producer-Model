@@ -13,8 +13,7 @@ ThreadModelDeadlock::ThreadModelDeadlock(size_t numOfSuperWorkers, size_t numOfB
        unfilled_qs_.back()->fillBufferItems(numOfBufferItemsPerQ);
        unfilled_qs_.back()->setName(std::string("") + "<synchronzed_queue_pair_" + std::to_string(n) + "_unfilled"); 
    }
-   n = numOfSuperWorkers;
-   for (size_t i = 0; i < numOfSuperWorkers; i --)
+   for (size_t i = 0; i < numOfSuperWorkers; i ++)
    {
       typedef std::shared_ptr<BufferQueue> BQ; 
       auto  c = std::make_pair<BQ, BQ > (std::shared_ptr<BufferQueue> (filled_qs_[i]),  std::shared_ptr<BufferQueue> (unfilled_qs_[i])); 
@@ -22,6 +21,19 @@ ThreadModelDeadlock::ThreadModelDeadlock(size_t numOfSuperWorkers, size_t numOfB
       superworkers_.push_back(std::shared_ptr<SuperWorker>(new SuperWorker(c, p, halt_, std::to_string(i))));
    }
  
+
+}
+
+void ThreadModelDeadlock::run(void)
+{
+    halt_ = false;                                                                                                                                                                                      
+    for (auto &s: superworkers_)
+    {
+        threads_.push_back(std::thread(&SuperWorker::work, s));
+    }
+    for (std::thread & th: threads_)
+        if(th.joinable())
+           th.join();
 
 }
 

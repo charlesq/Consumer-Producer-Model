@@ -20,6 +20,8 @@
      2.3.3 Producer
           Producer implements a while loop to acquire/produce BufferItem objects.
           In producing data in BufferItem objects, it writes its name and a number which increments in iteration of the while loop
+     2.3.4 SuperWorker
+          SuperWorker inherits from both Consumer and Producer; SuperWorker::work() invokes Consumer::work and Producer::work(). 
    2.4 Thread Models
      2.4.1 ThreadModelBase
          ThreadModeBase provides base code for provisioning Consumer/Producer objects and running each in a thread.
@@ -27,8 +29,10 @@
      2.4.2 ThreadModeOne
          Should have named it as ThreadModelSimple. :-)
          It provides two BufferQueue objects and demontrates opereraions of configurable number of Consumers and Producers.
-     2.4.3 ThreadModelDeadLock
-         To be implemented ...
+     2.4.3 ThreadModelDeadlock
+         ThreadModelDeadlock inherits ThreadModelBase and overrides run().
+         The trick is in its constructor, it makes each SuperWorker to consume buffers produced by next SuperWorker and formes circular dependencies; consequently,
+         which incurs a deadlock scenarion in execution.
      2.4.4 ThreadModelLiveLock
          To be implemented ...
 3. Source code structure
@@ -40,11 +44,15 @@
    run make command which generates binary executable cp
 5. Run the binary executable 
     Users must specify ThreadModel followed by other required arguments accordingly 
-    Available ThreadModel names: ThreadModelOne.
-    In the case of ThreadModelOne: commandline arguments are "ThreadModelOne",  (number of Consumers), (number of Producers), (number of BufferItems Per BufferQueue) 
-        for example: we have 2 Consumers, 3 Producers, 5 BufferItems Per BufferQueue:
+    Available ThreadModel names: ThreadModelOne, ThreadModelDeadlock.
+     5.1 Case of ThreadModelOne
+         Commandline arguments are "ThreadModelOne",  (number of Consumers), (number of Producers), (number of BufferItems Per BufferQueue) 
+         for example: we have 2 Consumers, 3 Producers, 5 BufferItems Per BufferQueue:
           $./cp ThreadModelOne 2 3 5"
-
+     5.2 Case of ThreadModelDeadlock   
+         Commandline arguments are "ThreadModelDeadlock", (number of SuperWorkers), (number of BufferItems Per BufferQueue)
+         for example: we have two SuperWorkers, 5 BufferItems Per BufferQueue:
+          $./cp ThreadModelDeadlock 2 5 
 6. Output logs of a sample run 
 	$ ./cp ThreadModelOne 2 3 5  
 	[Consumer_1]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
