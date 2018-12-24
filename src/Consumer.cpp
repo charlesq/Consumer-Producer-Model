@@ -11,16 +11,21 @@ void Consumer::work(void)
     while (!halt_)
     {
         std::stringstream ss;
-        ss  << "[" << getName() <<  "]: " << "    Attemps to acquire filled buffer " << std::endl;
+        ss  << "[" << getName() <<  "]: " << "    Attemps to acquire filled  buffer from [" << filled_->getName() << "]" << std::endl;
         printMessage(ss.str());
         ss.clear(); 
         auto  buf = filled_->acquireBuffer();
         if (buf.get() == nullptr)
             continue; 
-        Worker::work(); /* need a rest :-) */
-        ss << "[" << getName() << "]: " << " CONSUMES ******(" <<  buf->getBuffer() << ")****** in [BufferItem " << buf->getId()  << "]"  << std::endl;
+        ss << "[" << getName() << "]: " << " CONSUMING ******(" <<  buf->getBuffer() << ")****** in [BufferItem " << buf->getId()  << "]"  << std::endl;
+        printMessage(ss.str());
+        ss.clear();
+        Worker::work(); // need a break;
+        ss << "[" << getName() << "]: " << " RELEASED   ******[BufferItem " << buf->getId() << "]" << " to [" << unfilled_->getName() << "]" << std::endl; 
         printMessage(ss.str());
         unfilled_->releaseBuffer(buf);
+        Worker::work();
+      
     }
 }
 

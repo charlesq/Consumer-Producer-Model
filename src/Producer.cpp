@@ -13,7 +13,7 @@ void Producer::work(void)
     while (!halt_)
     {
         std::stringstream ss;
-        ss << "[" << getName() << "]: " << "    Atttemps to acquire unfilled buffer " << std::endl;
+        ss << "[" << getName() << "]: " << "    Atttemps to acquire unfilled buffer from [" << unfilled_->getName() << "]" << std::endl;
         printMessage(ss.str());
         ss.clear();
         auto  buf = unfilled_->acquireBuffer();
@@ -21,11 +21,15 @@ void Producer::work(void)
             continue;
         auto &data = buf->getBuffer();
         data.clear();
-        Worker::work(); /* I am not so diligent  and need a rest :-) */
         data.assign(getName() + "_data_" + std::to_string(seq++));
-        ss<< "[" << getName() << "]: "  << " PUTS $$$$$$[" <<  buf->getBuffer() << "]$$$$$$ in [BufferItem " << buf->getId()  << "]" << std::endl;
+        ss<< "[" << getName() << "]: "  << " PRODUCING   $$$$$$[" <<  buf->getBuffer() << "]$$$$$$ in [BufferItem " << buf->getId()  << "]" << std::endl;
         printMessage(ss.str());
-        filled_->releaseBuffer(buf);
+        ss.clear();
+        Worker::work(); /* I am not so diligent  and need a rest :-) */ 
+        ss << "[" << getName() << "]: " << " POSTED       $$$$$$[BufferItem " << buf->getId() << " to [" << filled_->getName() << "]" << std::endl; 
+        printMessage(ss.str());
+        filled_->releaseBuffer(buf); 
+        Worker::work();
     }
 
 }

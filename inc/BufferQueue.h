@@ -18,6 +18,7 @@ public:
 
     virtual  void releaseBuffer(std::shared_ptr<BufferItem> buf);
     virtual void setName(std::string n) final;
+    virtual const std::string & getName(void) const final;
 
 private:
     std::vector<std::shared_ptr<BufferItem>> items_;

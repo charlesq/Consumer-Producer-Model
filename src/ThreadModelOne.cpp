@@ -5,8 +5,10 @@
 ThreadModelOne::ThreadModelOne(size_t numOfConsumers, size_t numOfProducers, size_t numOfItemsPerQ)
 {
     filled_.reset(new BufferQueue(halt_));
+    filled_->setName("Paired_BufferQueue_0_filled");
     unfilled_.reset(new BufferQueue(halt_));
     unfilled_->fillBufferItems(numOfItemsPerQ);
+    unfilled_->setName("Paired_Buffer_Queue_0_unfilled");
     while(numOfConsumers-- != 0)
     {
          consumers_.push_back(std::shared_ptr<Consumer>(new Consumer(filled_, unfilled_, halt_, std::to_string(numOfConsumers))));

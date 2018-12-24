@@ -57,3 +57,8 @@ void BufferQueue::setName(std::string n)
 {
     name_ = n;
 }
+
+const std::string & BufferQueue::getName(void) const 
+{
+   return name_;
+}
