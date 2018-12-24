@@ -15,4 +15,8 @@ Worker::Worker(std::shared_ptr<BufferQueue> & cQ, std::shared_ptr<BufferQueue>& 
     }
 }
 
+void Worker::setName(std::string name)
+{
+    name_ = name;
+}
 

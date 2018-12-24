@@ -15,6 +15,7 @@ public:
     virtual void setEfficiency(size_t l) final { latency_ = l;}
 
 protected:
+    void setName(std::string name);
     std::shared_ptr<BufferQueue> filled_;
     std::shared_ptr<BufferQueue> unfilled_;
     std::string name_;

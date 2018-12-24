@@ -17,6 +17,7 @@ public:
     virtual std::shared_ptr<BufferItem> acquireBuffer(void);
 
     virtual  void releaseBuffer(std::shared_ptr<BufferItem> buf);
+    virtual void setName(std::string n) final;
 
 private:
     std::vector<std::shared_ptr<BufferItem>> items_;
@@ -25,6 +26,8 @@ private:
     std::shared_ptr<BufferItem> dequeueBuffer(void);
     void queueBuffer(std::shared_ptr<BufferItem> buf);
     const bool &over_; /* this is to indicate that no need to wait for buffer on condition, currently not utilized, maybe in future excises */
+    std::string name_; // an added field after ThreadModelOne has been coded
+   
 };
 
 #endif

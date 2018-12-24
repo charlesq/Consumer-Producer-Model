@@ -6,7 +6,7 @@
 class ThreadModelOne: public ThreadModelBase
 {
 public:
-   explicit ThreadModelOne (size_t numOfConsumers = 1, size_t numOfProducers = 1, size_t numofItems = 1);
+   explicit ThreadModelOne (size_t numOfConsumers = 1, size_t numOfProducers = 1, size_t numofItemsPerQ = 1);
    virtual ~ThreadModelOne()=default;
 
 private: 

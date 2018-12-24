@@ -53,3 +53,7 @@ void BufferQueue::releaseBuffer(std::shared_ptr<BufferItem> buf)
     cv_.notify_one();
 }
 
+void BufferQueue::setName(std::string n)
+{
+    name_ = n;
+}

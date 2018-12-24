@@ -1,0 +1,5 @@
+*.out
+*.so
+*.o
+*.swap
+cp
