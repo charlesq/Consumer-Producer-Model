@@ -13,7 +13,7 @@ void Producer::work(bool withCV)
     int seq = 0;
     while (!halt_)
     {
-        auto buf = acquireBuffer(withCV);
+       auto buf = acquireBuffer(withCV);
        produce(buf);
        postBuffer(buf);
     }

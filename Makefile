@@ -1,7 +1,6 @@
 TARGET := cp
 CFLAGS := -std=c++11
 
-CC       = g++   -c  -fPIC
 CXX   = g++   -g
 LFLAGS   = -Wall
 

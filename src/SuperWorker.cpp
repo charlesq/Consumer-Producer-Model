@@ -23,6 +23,7 @@ void SuperWorker::work(bool withCV)
         returnBuffer(buf);
         buf = Producer::acquireBuffer(withCV);
         Producer::produce(buf);
+        Producer::postBuffer(buf);
     }
 
 }
