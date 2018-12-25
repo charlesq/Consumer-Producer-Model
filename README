@@ -70,7 +70,7 @@
           Commandline arguments are "ThreadModelDeadlock", (number of SuperWorkers), (number of BufferItems Per BufferQueue)
           for example: we have two SuperWorkers, 5 BufferItems Per BufferQueue:
 
-          $./cp ThreadModelDeadlock 2 5 
+          $./cp ThreadModelLivelock 2 5 
 
 6. Output logs of a sample run 
 	$ ./cp ThreadModelOne 2 3 5  
