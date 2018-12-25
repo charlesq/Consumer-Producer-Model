@@ -24,12 +24,12 @@ ThreadModelLivelock::ThreadModelLivelock(size_t numOfSuperWorkers, size_t numOfB
 
 }
 
-void ThreadModelLivelock::run(void)
+void ThreadModelLivelock::run(bool withCV)
 {
     halt_ = false;
     for (auto &s: superworkers_)
     {
-        threads_.push_back(std::thread(&SuperWorker::workWithoutCV, s));
+        threads_.push_back(std::thread(&SuperWorker::work, s, withCV));
     }
     for (std::thread & th: threads_)
         if(th.joinable())

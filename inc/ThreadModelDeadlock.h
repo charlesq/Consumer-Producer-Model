@@ -9,7 +9,7 @@ class ThreadModelDeadlock: public ThreadModelBase
 {
 public:
     ThreadModelDeadlock(size_t numOfSuperUsers, size_t numOfBufferItemsPerQ);
-    virtual void run(void);
+    virtual void run(bool withCV = true);
     
 private:
     std::vector<std::shared_ptr<SuperWorker> > superworkers_;

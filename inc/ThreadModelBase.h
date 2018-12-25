@@ -12,7 +12,7 @@ public:
      inline size_t getNumberOfConsumers(void) const;
      inline size_t getNumberOfProducers(void) const;
      virtual ~ThreadModelBase();
-     virtual void run();
+     virtual void run(bool withCV = true);
 
 protected:
 

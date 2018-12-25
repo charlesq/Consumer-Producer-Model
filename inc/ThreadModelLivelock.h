@@ -10,7 +10,7 @@ class ThreadModelLivelock: public ThreadModelBase
 {
 public:
     ThreadModelLivelock(size_t numOfSuperUsers, size_t numOfBufferItemsPerQ);
-    virtual void run(void);
+    virtual void run(bool withCV = false);
 private:
     std::vector<std::shared_ptr<SuperWorker> > superworkers_;
     std::vector<std::shared_ptr<BufferQueue> > unfilled_qs_;

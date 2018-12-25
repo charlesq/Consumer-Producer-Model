@@ -7,13 +7,13 @@ void ThreadModelBase::halt(void)
 }
 
 
-void ThreadModelBase::run()
+void ThreadModelBase::run(bool withCV)
 {
     halt_ = false;
     for (auto &c: consumers_)
-        threads_.push_back(std::thread(&Consumer::work, c));
+        threads_.push_back(std::thread(&Consumer::work, c, withCV));
     for (auto &p: producers_)
-        threads_.push_back(std::thread(&Producer::work, p));
+        threads_.push_back(std::thread(&Producer::work, p, withCV));
     for (std::thread & th: threads_)
         if(th.joinable())
            th.join();

@@ -35,18 +35,14 @@
      2.4.3 ThreadModelDeadlock
          ThreadModelDeadlock inherits ThreadModelBase and overrides run().
          The trick is in its constructor, it makes each SuperWorker to consume buffers produced by next SuperWorker and formes circular dependencies; consequently,
-         which incurs a deadlock scenarion in execution.
+         which incurs a deadlock scenarion in execution because in each thread, the SuperUser will be stuck in waiting on empty filled BufferQueue.
      2.4.4 ThreadModelLivelock
          ThreadModelDeadLock inherits ThreadModelBase and overrides run().
          The trick:
-            1) each SuperWorker will make attemp to acquire a BufferItem for its Producer duty if it failes to acquire a BufferItem for its Consumer duty. 
+            1) Each SuperWorker will make attemp to acquire a BufferItem for its Producer duty.
+               If it failes to acquire a BufferItem for its Consumer duty. 
                In another word, it must acquire both BufferItems in order to produce.
             2) Deadlock won't occur because Mutexes for both duties will be releasd in each iteration.
-         To support ThreadModelDeadLivelock:
-            1) BufferQueue::acquireBufferWithoutCV() is added
-            2) Consumer::acquireBuffer() and Consumer::consume() are added
-            3) Producer::acquireBuffer() and Producer::produce() are added
-            4) SuperWorker::workWithoutCV() is added
       
 3. Source code structure
    |--- Makefile, README
@@ -57,70 +53,61 @@
    run make command which generates binary executable cp
 5. Run the binary executable 
     Users must specify ThreadModel followed by other required arguments accordingly 
-    Available ThreadModel names: ThreadModelOne, ThreadModelDeadlock.
+    Available ThreadModel names: ThreadModelOne, ThreadModelDeadlock ThreadModelLivelock
      5.1 Case of ThreadModelOne
          Commandline arguments are "ThreadModelOne",  (number of Consumers), (number of Producers), (number of BufferItems Per BufferQueue) 
          for example: we have 2 Consumers, 3 Producers, 5 BufferItems Per BufferQueue:
+
           $./cp ThreadModelOne 2 3 5"
+
      5.2 Case of ThreadModelDeadlock   
          Commandline arguments are "ThreadModelDeadlock", (number of SuperWorkers), (number of BufferItems Per BufferQueue)
          for example: we have two SuperWorkers, 5 BufferItems Per BufferQueue:
+
+          $./cp ThreadModelDeadlock 2 5
+
+     5.3 Case of ThreadModelLivelock
+          Commandline arguments are "ThreadModelDeadlock", (number of SuperWorkers), (number of BufferItems Per BufferQueue)
+          for example: we have two SuperWorkers, 5 BufferItems Per BufferQueue:
+
           $./cp ThreadModelDeadlock 2 5 
+
 6. Output logs of a sample run 
 	$ ./cp ThreadModelOne 2 3 5  
 	[Consumer_1]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
 	[Producer_2]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
+	[Producer_2]:  LOCKED on Paired_Buffer_Queue_0_unfilled
 	[Consumer_0]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Producer_2]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_2]:  PRODUCING   $$$$$$[Producer_2_data_0]$$$$$$ in [BufferItem 4]
 	[Producer_1]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_1]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
+	[Producer_1]:  LOCKED on Paired_Buffer_Queue_0_unfilled
+	[Producer_0]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
+	[Producer_0]:  LOCKED on Paired_Buffer_Queue_0_unfilled
+	[Producer_2]:  PRODUCING   $$$$$$[Producer_2_data_1]$$$$$$ in [BufferItem 4]
 	[Producer_1]:  PRODUCING   $$$$$$[Producer_1_data_0]$$$$$$ in [BufferItem 3]
-	[Producer_0]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_0]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_0]:  PRODUCING   $$$$$$[Producer_0_data_0]$$$$$$ in [BufferItem 2]
-	[Producer_2]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_2]:  PRODUCING   $$$$$$[Producer_2_data_0]$$$$$$ in [BufferItem 4]
-	[Producer_2]:  POSTED       $$$$$$[BufferItem 4 to [Paired_BufferQueue_0_filled]
-	[Producer_0]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_0]:  PRODUCING   $$$$$$[Producer_0_data_0]$$$$$$ in [BufferItem 2]
+	[Producer_0]:  PRODUCING   $$$$$$[Producer_0_data_2]$$$$$$ in [BufferItem 2]
 	[Producer_0]:  POSTED       $$$$$$[BufferItem 2 to [Paired_BufferQueue_0_filled]
-	[Consumer_1]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Consumer_1]:  CONSUMING ******(Producer_2_data_0)****** in [BufferItem 4]
-	[Producer_1]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_1]:  PRODUCING   $$$$$$[Producer_1_data_0]$$$$$$ in [BufferItem 3]
 	[Producer_1]:  POSTED       $$$$$$[BufferItem 3 to [Paired_BufferQueue_0_filled]
-	[Consumer_0]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Consumer_0]:  CONSUMING ******(Producer_0_data_0)****** in [BufferItem 2]
-	[Consumer_0]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Consumer_0]:  CONSUMING ******(Producer_0_data_0)****** in [BufferItem 2]
-	[Consumer_0]:  RELEASED   ******[BufferItem 2] to [Paired_Buffer_Queue_0_unfilled]
-	[Consumer_1]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Consumer_1]:  CONSUMING ******(Producer_2_data_0)****** in [BufferItem 4]
-	[Consumer_1]:  RELEASED   ******[BufferItem 4] to [Paired_Buffer_Queue_0_unfilled]
-	[Producer_2]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_2]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_2]:  PRODUCING   $$$$$$[Producer_2_data_1]$$$$$$ in [BufferItem 1]
+	[Consumer_1]:  LOCKED on Paired_BufferQueue_0_filled
+	[Producer_2]:  POSTED       $$$$$$[BufferItem 4 to [Paired_BufferQueue_0_filled]
+	[Consumer_0]:  LOCKED on Paired_BufferQueue_0_filled
 	[Producer_0]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
+	[Consumer_1]:  CONSUMING ******(Producer_0_data_2)****** in [BufferItem 2]
+	[Producer_0]:  LOCKED on Paired_Buffer_Queue_0_unfilled
 	[Producer_1]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_0]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_0]:  PRODUCING   $$$$$$[Producer_0_data_1]$$$$$$ in [BufferItem 0]
-	[Producer_1]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_1]:  PRODUCING   $$$$$$[Producer_1_data_1]$$$$$$ in [BufferItem 2]
-	[Consumer_0]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Consumer_1]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Consumer_0]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
+	[Producer_1]:  LOCKED on Paired_Buffer_Queue_0_unfilled
 	[Consumer_0]:  CONSUMING ******(Producer_1_data_0)****** in [BufferItem 3]
 	[Producer_2]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_2]:  PRODUCING   $$$$$$[Producer_2_data_1]$$$$$$ in [BufferItem 1]
-	[Producer_2]:  POSTED       $$$$$$[BufferItem 1 to [Paired_BufferQueue_0_filled]
+	[Consumer_1]:  RELEASED   ******[BufferItem 2] to [Paired_Buffer_Queue_0_unfilled]
+	[Consumer_0]:  RELEASED   ******[BufferItem 3] to [Paired_Buffer_Queue_0_unfilled]
+	[Producer_2]:  LOCKED on Paired_Buffer_Queue_0_unfilled
+	[Producer_0]:  PRODUCING   $$$$$$[Producer_0_data_4]$$$$$$ in [BufferItem 1]
+	[Producer_1]:  PRODUCING   $$$$$$[Producer_1_data_3]$$$$$$ in [BufferItem 0]
+	[Consumer_0]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
+	[Consumer_0]:  LOCKED on Paired_BufferQueue_0_filled
 	[Consumer_1]:     Attemps to acquire filled  buffer from [Paired_BufferQueue_0_filled]
-	[Consumer_1]:  CONSUMING ******(Producer_2_data_1)****** in [BufferItem 1]
-	[Producer_0]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_0]:  PRODUCING   $$$$$$[Producer_0_data_1]$$$$$$ in [BufferItem 0]
-	[Producer_0]:  POSTED       $$$$$$[BufferItem 0 to [Paired_BufferQueue_0_filled]
-	[Producer_1]:     Atttemps to acquire unfilled buffer from [Paired_Buffer_Queue_0_unfilled]
-	[Producer_1]:  PRODUCING   $$$$$$[Producer_1_data_1]$$$$$$ in [BufferItem 2]
-	[Producer_1]:  POSTED       $$$$$$[BufferItem 2 to [Paired_BufferQueue_0_filled]
-           
+	[Producer_0]:  POSTED       $$$$$$[BufferItem 1 to [Paired_BufferQueue_0_filled]
+	[Consumer_1]:  LOCKED on Paired_BufferQueue_0_filled
+	[Producer_2]:  PRODUCING   $$$$$$[Producer_2_data_5]$$$$$$ in [BufferItem 2]
+	[Producer_1]:  POSTED       $$$$$$[BufferItem 0 to [Paired_BufferQueue_0_filled]
+ 
 

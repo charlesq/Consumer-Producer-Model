@@ -24,12 +24,12 @@ ThreadModelDeadlock::ThreadModelDeadlock(size_t numOfSuperWorkers, size_t numOfB
 
 }
 
-void ThreadModelDeadlock::run(void)
+void ThreadModelDeadlock::run(bool withCV)
 {
     halt_ = false;                                                                                                                                                                                      
     for (auto &s: superworkers_)
     {
-        threads_.push_back(std::thread(&SuperWorker::work, s));
+        threads_.push_back(std::thread(&SuperWorker::work, s, withCV));
     }
     for (std::thread & th: threads_)
         if(th.joinable())
