@@ -29,16 +29,12 @@ std::shared_ptr<BufferItem> BufferQueue::acquireBuffer(std::string user, bool wi
     std::unique_lock<std::mutex> lk(mtx_);
     if (withCV)
         cv_.wait(lk, [&]{return !this->empty() || over_;});
+    else
+       lk.lock();
     printMessage(std::string("[") + user + "]:" + "  LOCKED on " + getName() + "\n");
     auto b =  dequeueBuffer();
     lk.unlock();
     return b;
-}
-std::shared_ptr<BufferItem>  BufferQueue::acquireBufferWithoutCV(void)
-{
-    std::lock_guard<std::mutex> lk(mtx_);
-    printMessage(std::string("                     LOCKED on ") + getName() + "\n");
-    return  dequeueBuffer();
 }
 
 std::shared_ptr<BufferItem>  BufferQueue::dequeueBuffer(void)
@@ -58,9 +54,8 @@ void BufferQueue::queueBuffer(std::shared_ptr<BufferItem> buf)
 }
 void BufferQueue::releaseBuffer(std::shared_ptr<BufferItem> buf)
 {
-    std::unique_lock<std::mutex> lk(mtx_);
+    std::lock_guard<std::mutex> lk(mtx_);
     queueBuffer(buf);
-    lk.unlock();
     cv_.notify_one();
 }
 
