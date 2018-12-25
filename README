@@ -6,7 +6,7 @@
 2. classes
    2.1 BufferItem
        A BufferItem provides a string data field, an unique ID, 
-       Type of string is picked bacause it is mark the source of data content.
+       Type of string is picked bacause we may print the source of data content in the string.
    2.2 BufferQueue
        BuffferQueue derives from std::queue with multi-thread-safe functions to acquire/return BufferItem objects. 
        A mutex and condition variable are used to syncrhonize access to the queue.
@@ -67,7 +67,7 @@
           $./cp ThreadModelDeadlock 2 5
 
      5.3 Case of ThreadModelLivelock
-          Commandline arguments are "ThreadModelDeadlock", (number of SuperWorkers), (number of BufferItems Per BufferQueue)
+          Commandline arguments are "ThreadModelLivelock", (number of SuperWorkers), (number of BufferItems Per BufferQueue)
           for example: we have two SuperWorkers, 5 BufferItems Per BufferQueue:
 
           $./cp ThreadModelLivelock 2 5 
