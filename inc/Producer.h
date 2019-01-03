@@ -4,7 +4,7 @@
 class Producer: public Worker
 {
 public:
-    Producer(std::shared_ptr<BufferQueue > & contentQ_, std::shared_ptr< BufferQueue>  &blankQ_, const bool &signalStop, std::string name);
+    Producer(std::shared_ptr<BufferQueue > & contentQ_, std::shared_ptr< BufferQueue>  &blankQ_,std::string name);
     virtual bool isConsumer(void) const final {return false; }
     virtual void work(bool withCV = true);
     virtual std::shared_ptr<BufferItem>  acquireBuffer(bool withCV = true);

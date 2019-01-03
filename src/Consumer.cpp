@@ -2,14 +2,14 @@
 #include "../inc/Consumer.h"
 #include "../inc/utils.h"
 
-Consumer::Consumer(std::shared_ptr<BufferQueue > & cQ, std::shared_ptr<BufferQueue> &bQ, const bool &signalStop, std::string name)
-:Worker(cQ,bQ, signalStop, std::string("Consumer_") + name)
+Consumer::Consumer(std::shared_ptr<BufferQueue > & cQ, std::shared_ptr<BufferQueue> &bQ, std::string name)
+:Worker(cQ,bQ, std::string("Consumer_") + name)
 {
 }
 void Consumer::work(bool withCV)
 {
     std::stringstream ss;
-    while (!halt_)
+    while (true)
     {
         auto buf = acquireBuffer(withCV);
         consume(buf); 
@@ -31,7 +31,6 @@ std::shared_ptr<BufferItem>   Consumer::acquireBuffer(bool withCV)
         ss << "[" << getName() << "]: " << " GOT NO FILLED BUFFER from " << "[" << filled_->getName() << "]" << std::endl;
         printMessage(ss.str());
     }
-    Worker::work();
     return buf;
 }
 
@@ -43,7 +42,6 @@ void Consumer::returnBuffer(std::shared_ptr<BufferItem> buf)
    ss << "[" << getName() << "]: " << " RELEASED   ******[BufferItem " << buf->getId() << "]" << " to [" << unfilled_->getName() << "]" << std::endl; 
    printMessage(ss.str());
    unfilled_->releaseBuffer(buf);
-   Worker::work();
 }  
 
 void Consumer::Consumer::consume(const std::shared_ptr<BufferItem> buf)

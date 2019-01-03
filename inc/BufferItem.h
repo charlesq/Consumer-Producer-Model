@@ -8,7 +8,7 @@ public:
     BufferItem(void) = delete;
     explicit BufferItem(uint16_t id);
     virtual std::string & getBuffer (void) final;
-    virtual const std::string & getBuffer(void) const final;
+    virtual const std::string & getBuffer(void) const;
     virtual ~BufferItem() = default;
     virtual uint16_t  getId(void) const;
 private:

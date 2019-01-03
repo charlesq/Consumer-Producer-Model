@@ -13,12 +13,12 @@ public:
      inline size_t getNumberOfProducers(void) const;
      virtual ~ThreadModelBase();
      virtual void run(bool withCV = true);
+     void Sleep(void);
 
 protected:
 
     std::vector<std::shared_ptr<Consumer>> consumers_;
     std::vector<std::shared_ptr<Producer>> producers_;
-    bool halt_ = true;
     std::vector<std::thread > threads_;
     ThreadModelBase() = default;
 

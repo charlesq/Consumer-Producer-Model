@@ -1,11 +1,10 @@
 #include <iostream>
 #include "../inc/Worker.h"
 
-Worker::Worker(std::shared_ptr<BufferQueue> & cQ, std::shared_ptr<BufferQueue>& bQ, const bool &signalStop, std::string name)
+Worker::Worker(std::shared_ptr<BufferQueue> & cQ, std::shared_ptr<BufferQueue>& bQ, std::string name)
 :filled_(cQ),
  unfilled_(bQ),
- name_(name),
- halt_(signalStop)
+ name_(name)
 {
     if (filled_ == nullptr && unfilled_ == nullptr)
     {

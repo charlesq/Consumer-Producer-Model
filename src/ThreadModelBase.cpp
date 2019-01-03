@@ -1,15 +1,17 @@
 #include <thread>
+#include <unistd.h>
 #include "../inc/ThreadModelBase.h"
+#include <iostream>
+#include "../inc/utils.h"
+#include <chrono>
 
 void ThreadModelBase::halt(void)
 {
-    halt_ = true;
 }
 
 
 void ThreadModelBase::run(bool withCV)
 {
-    halt_ = false;
     for (auto &c: consumers_)
         threads_.push_back(std::thread(&Consumer::work, c, withCV));
     for (auto &p: producers_)

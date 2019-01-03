@@ -2,8 +2,8 @@
 #include "../inc/Producer.h"
 #include "../inc/utils.h"
 
-Producer::Producer(std::shared_ptr<BufferQueue> &cQ, std::shared_ptr< BufferQueue> & bQ, const bool &signalStop, std::string name)
-:Worker(cQ,bQ, signalStop, std::string("Producer_") + name)
+Producer::Producer(std::shared_ptr<BufferQueue> &cQ, std::shared_ptr< BufferQueue> & bQ, std::string name)
+:Worker(cQ,bQ, std::string("Producer_") + name)
 {
 }
 
@@ -11,7 +11,7 @@ void Producer::work(bool withCV)
 {
     std::stringstream ss;
     int seq = 0;
-    while (!halt_)
+    while (true)
     {
        auto buf = acquireBuffer(withCV);
        produce(buf);
@@ -34,7 +34,6 @@ std::shared_ptr<BufferItem>  Producer::acquireBuffer(bool withCV)
         printMessage(ss.str());
         ss.clear();
     } 
-    Worker::work();
     return buf;
 }
 
@@ -64,6 +63,5 @@ void Producer::postBuffer(std::shared_ptr<BufferItem>  buf)
     ss << "[" << getName() << "]: " << " POSTED       $$$$$$[BufferItem " << buf->getId() << " to [" << filled_->getName() << "]" << std::endl; 
     printMessage(ss.str());
     filled_->releaseBuffer(buf); 
-    Worker::work();
 
 }
